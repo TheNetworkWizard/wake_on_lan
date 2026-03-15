@@ -1,9 +1,4 @@
 import { Server } from "./Server.js"
-import { apiService } from "../services/api.service.js";
-
-function setState(server, store) {
-    console.log(store.servers);
-}
 
 export function ServerList(servers, store) {
   /*store.subscribe((e) => {
@@ -13,7 +8,6 @@ export function ServerList(servers, store) {
   Object.keys(servers).forEach(function(key) {
       container.appendChild(Server(servers[key], store))
     });
-
   return container;
 }
 

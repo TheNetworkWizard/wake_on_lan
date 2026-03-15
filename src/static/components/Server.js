@@ -1,9 +1,11 @@
 import { apiService } from "../services/api.service.js";
 
+let refresh_interval = null;
+
 export function Server(server, store) {
     console.log(`Adding server ${server.name} - ${server.status}`);
     const div = document.createElement("div");
-    store.subscribe((e) => {      
+    store.subscribe((e) => {    
         if(server.status != store.state.servers[server.name].status) {
             console.log(`State change event for Server ${server.name} - ${store.state.servers[server.name].status}`)
             render(div, store.state.servers[server.name], store);
@@ -11,7 +13,12 @@ export function Server(server, store) {
         } 
     });
     render(div, server, store);
-    refreshStatus(server, store);
+    refresh_interval = refreshStatus(server, store);
+
+    console.log(`Refresh interval for ${server.name} is ${refresh_interval}`);
+
+
+
     return div;
 }
 
@@ -40,7 +47,7 @@ function render(div, server, store) {
     }
     }
 
-    div.innerHTML = `<b>${server.name}</b> - <span id="status">${server.status}</span>  - `;
+    div.innerHTML = `<b><a href="/server/${server.name}" data-link>${server.name}</a></b> - <span id="status">${server.status}</span>  - `;
     div.append(controls);
     return div;
 }
@@ -56,10 +63,12 @@ function PowerOffServer(server, store){
 }
 
 function refreshStatus(server, store) {
-    setInterval(async function(){
+    let refresh_interval = setInterval(async function(){
+        console.log(`refresh ${server.name}`);
         const server_status = await apiService.request(`/getServerStatus/${server.name}`);
         if (server_status.status != server.status) {
             store.setState({servers: {[server.name]: {address: server.address, name: server.name, status: server_status.status}}});
         }
-    }, 60000);
+    }, 10000);
+    return refresh_interval;
 }

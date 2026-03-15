@@ -16,17 +16,18 @@ server_list = {
     }     
 
 # Define a route for the root URL
-@app.route("/")
-def index():
-    return render_template('index.html')
-
 @app.route("/getServerList")
 def getServerList():
     return server_list
 
 @app.route("/getServerStatus/<server_name>")
 def getServerStatus(server_name):
-    return {"status": server_list[server_name]["status"]}
+    return server_list[server_name]
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def index(path):
+    return render_template('index.html')
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=8000)
