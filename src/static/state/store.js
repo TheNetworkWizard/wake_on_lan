@@ -3,6 +3,7 @@ class Store {
     this.state = {
       servers: {},
       loading: false,
+      runTimers: false,
       error: null,
     };
     this.listeners = [];
@@ -14,6 +15,8 @@ class Store {
   }
 
   setState(newState) {
+    
+
     for (const [key, value] of Object.entries(newState)) {
       if(typeof(value) == "object") {
         this.state[key] = { ...this.state[key], ...value };

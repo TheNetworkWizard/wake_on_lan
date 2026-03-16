@@ -1,0 +1,21 @@
+.server-list {
+    margin-top: 100px;
+}
+
+.server-container {
+    width: 200px;
+    height: 50px;
+    border: 1px solid #000;
+    line-height: 100%;
+    text-align: center;
+    margin: 0px auto;
+    margin-bottom: 20px;
+}
+
+.server-online {
+    background-color: green;
+}
+
+.server-offline {
+    background-color: red;
+}
