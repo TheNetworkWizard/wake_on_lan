@@ -27,44 +27,47 @@ export function Server(server, store) {
 }
 
 function render(div, server, store) {
-    console.log(`Rendering ${server.name}`);
+    console.log(`Rendering ${server.name} ${typeof(server.status)}`);
 
-    
     const controls = document.createElement("span");
 
     if (server.status === null) {
-    server.status = "Loading...";
+        server.status = "Loading...";
     } else {
-    if (server.status == 1) {
-        div.classList.add("server-online")
-        controls.innerHTML = "Power Off";
-        div.addEventListener('click', function() {
-            PowerOffServer(server, store);
-        });
-    } else if (server.status == 0) {
-        div.classList.add("server-offline")
-        controls.innerHTML = "Power On";
-        div.addEventListener('click', function() {
-            PowerOnServer(server, store);
-        });
-    } else if (server.status == 2) {
-        controls.innerHTML = "Loading...";
-    }
+        if (server.status) {
+            console.log("Server is online")
+            div.classList.add("server-online")
+            div.classList.remove("server-offline")
+            controls.innerHTML = "Power Off";
+            div.addEventListener('click', function() {
+                PowerOffServer(server, store);
+            });
+        } else if (!server.status) {
+            div.classList.remove("server-online")
+            div.classList.add("server-offline")
+            controls.innerHTML = "Power On";
+            div.addEventListener('click', function() {
+                PowerOnServer(server, store);
+            });
+        } else if (server.status == 2) {
+            controls.innerHTML = "Loading...";
+        }
     }
 
-    div.innerHTML = `<b><a href="/server/${server.name}" data-link>${server.name}</a></b> `;
-    div.append(controls);
+    div.innerHTML = `<a href="/server/${server.name}" data-link>${server.name}</a>`;
+    //div.append(controls);
     return div;
 }
 
 async function PowerOnServer(server, store){
+    //window.location.href = `/server/${server.name}`
     console.log(`Power On ${server.name} - ${server.status}`);
-    store.setState({servers: {[server.name]: {address: server.address, name: server.name, status: 1}}});
+    //store.setState({servers: {[server.name]: {address: server.address, name: server.name, status: true}}});
 }
 
 function PowerOffServer(server, store){
     console.log(`Power Off ${server.name} - ${server.status}`);
-    store.setState({servers: {[server.name]: {address: server.address, name: server.name, status: 0}}});
+    //store.setState({servers: {[server.name]: {address: server.address, name: server.name, status: false}}});
 }
 
 function refreshStatus(server, store) {
