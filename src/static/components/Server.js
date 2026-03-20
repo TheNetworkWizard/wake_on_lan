@@ -1,4 +1,5 @@
 import { apiService } from "../services/api.service.js";
+import { ServerDetail } from "./ServerDetail.js";
 
 let refresh_interval = null;
 
@@ -29,6 +30,8 @@ export function Server(server, store) {
 function render(div, server, store) {
     console.log(`Rendering ${server.name} ${typeof(server.status)}`);
 
+    div.innerHTML = `${server.name}`;
+
     const controls = document.createElement("span");
 
     if (server.status === null) {
@@ -40,23 +43,33 @@ function render(div, server, store) {
             div.classList.remove("server-offline")
             controls.innerHTML = "Power Off";
             div.addEventListener('click', function() {
-                PowerOffServer(server, store);
+                //PowerOffServer(server, store);
+                console.log('server details');
+                div.innerHTML = "";
+                div.append("foo");
+                div.append(getServerDetails(server, store));
             });
         } else if (!server.status) {
             div.classList.remove("server-online")
             div.classList.add("server-offline")
             controls.innerHTML = "Power On";
             div.addEventListener('click', function() {
-                PowerOnServer(server, store);
+                //PowerOnServer(server, store);
+                console.log(div);
+                window.location.href = `/server/${server.name}`;
             });
         } else if (server.status == 2) {
             controls.innerHTML = "Loading...";
         }
     }
 
-    div.innerHTML = `<a href="/server/${server.name}" data-link>${server.name}</a>`;
+    
     //div.append(controls);
     return div;
+}
+
+async function getServerDetails(server, store) {
+    return ServerDetail(server, store);
 }
 
 async function PowerOnServer(server, store){

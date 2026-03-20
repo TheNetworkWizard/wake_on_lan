@@ -1,6 +1,7 @@
 
 import Index from "./views/Index.js";
 import Server from "./views/Server.js";
+import Error from "./views/Error.js";
 import { store } from "./state/store.js";
 
 const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
@@ -20,7 +21,10 @@ const navigateTo = url => {
 }
 
 const router = async () => {
+  store.setState({runTimers: false});
+
   const routes = [
+    { path: "/error", view: Error},
     { path: "/", view: Index },
     { path: "/server/:server_name", view: Server }
   ];
@@ -38,7 +42,8 @@ const router = async () => {
   if (!match) {
     match = {
       route: routes[0],
-      result: location.pathname
+      result: location.pathname,
+      error: 404,
     }
   }
 
@@ -48,7 +53,7 @@ const router = async () => {
 
   app.innerHTML = '';
 
-  app.appendChild(await view.getHtml());  
+  app.append(await view.render());  
 }
 
 window.addEventListener("popstate", router);

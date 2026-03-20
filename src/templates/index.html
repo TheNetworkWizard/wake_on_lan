@@ -7,7 +7,22 @@
   <link rel="stylesheet" href="/static/styles/main.css" />
 </head>
 <body>
-  <div id="app"></div>
-  <script type="module" src="/static/main.js"></script>
+  <header>
+    <h1>Wake On LAN Server</h1>
+  </header>
+  <nav>
+    <ul>
+    <li><a href="/" data-link>Server List</a></li>
+    <li><a href="/addServer" data-link>Add Server</a></li>
+    <li><a href="/removeServer" data-link>Remove Server</a></li>
+    </ul>
+  </nav>
+  <section id="mainContent">
+    <div id="app"></div>
+    <script type="module" src="/static/main.js"></script>
+  </section>
+  <footer>
+    Copyright TheNetworkWizard 2026
+  </footer>
 </body>
 </html>

@@ -11,7 +11,7 @@ export default class extends AbstractView {
         this.setTitle("Wake On LAN Server");
     }
 
-    async getHtml() {
+    async render() {
         //store.setState({loading: true});
         const server_list = await apiService.request("/getServerList")
         .then((responseJSON) => {
@@ -19,18 +19,5 @@ export default class extends AbstractView {
             return ServerList(responseJSON, store);
         });
         return server_list;
-    }
-
-    render(state) {
-        if (state.loading) {
-            return "<p>Loading...</p>";
-        }
-        if (state.error) {
-            return `<p class="error">${state.error}</p>`;
-        }
-        if(state.servers) {
-            return "Hello World"; 
-            return app.appendChild(ServerList(state.servers, store));
-        }    
     }
 }

@@ -1,13 +1,12 @@
 import AbstractView from "./AbstractView.js";
-import { ServerDetail } from "../components/ServerDetail.js";
 
 export default class extends AbstractView {
     constructor(params) {
         super(params);
-        this.setTitle("Wake On LAN Server");
+        this.setTitle("Wake On LAN");
     }
 
     async render() {
-        return ServerDetail(this.params.server_name);
+        return "404 Not Found";
     }
 }
