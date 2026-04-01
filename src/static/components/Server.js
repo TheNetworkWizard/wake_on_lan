@@ -30,7 +30,7 @@ export function Server(server, store) {
 function render(div, server, store) {
     console.log(`Rendering ${server.name} ${typeof(server.status)}`);
 
-    div.innerHTML = `${server.name}`;
+    div.innerHTML = `<a href="/server/${server.name}" data-link>${server.name}</a>`;
 
     const controls = document.createElement("span");
 
@@ -41,30 +41,13 @@ function render(div, server, store) {
             console.log("Server is online")
             div.classList.add("server-online")
             div.classList.remove("server-offline")
-            controls.innerHTML = "Power Off";
-            div.addEventListener('click', function() {
-                //PowerOffServer(server, store);
-                console.log('server details');
-                div.innerHTML = "";
-                div.append("foo");
-                div.append(getServerDetails(server, store));
-            });
         } else if (!server.status) {
             div.classList.remove("server-online")
             div.classList.add("server-offline")
-            controls.innerHTML = "Power On";
-            div.addEventListener('click', function() {
-                //PowerOnServer(server, store);
-                console.log(div);
-                window.location.href = `/server/${server.name}`;
-            });
         } else if (server.status == 2) {
             controls.innerHTML = "Loading...";
         }
     }
-
-    
-    //div.append(controls);
     return div;
 }
 

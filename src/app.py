@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, abort, redirect
 import os
 app = Flask(__name__)
 
@@ -22,6 +22,29 @@ def getServerList():
 
 @app.route("/getServerStatus/<server_name>")
 def getServerStatus(server_name):
+    if server_name not in server_list:
+        abort(404)
+    return server_list[server_name]
+
+@app.route("/startServer/<server_name>")
+def startServer(server_name):
+    if server_name not in server_list:
+        abort(404)
+
+    if not server_list[server_name]['status']:
+        server_list[server_name]['status'] = True
+
+    return server_list[server_name]
+
+
+@app.route("/stopServer/<server_name>")
+def stopServer(server_name):
+    if server_name not in server_list:
+        abort(404)
+
+    if server_list[server_name]['status']:
+        server_list[server_name]['status'] = False
+
     return server_list[server_name]
 
 @app.route('/', defaults={'path': ''})
@@ -35,7 +58,12 @@ def updateStatus():
     for server in server_list:
         print(f"Pinging {server_list[server]['name']}")
         server_list[server]['status'] = os.system(f"ping -c 1 {server_list[server]['address']}  &> /dev/null") == False
-    return ""
+    return redirect("/", code=302)
+
+
+@app.route('/error/404')
+def pageNotFound():
+    return render_template('index.html'), 404
 
 
 if __name__ == "__main__":

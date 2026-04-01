@@ -1,32 +1,21 @@
 import { apiService } from "../services/api.service.js";
 import { store } from "../state/store.js";
+import { navigateTo } from "../main.js";
 
 export async function ServerDetail(server, store) {
     console.log(server);
     console.log(store);
-    console.log(`Getting server details for ${server.name}`)
+    console.log(`Getting server details for ${server}`)
     const div = document.createElement("div");
 
-    console.log(store.state);
-
-    let server_details = await getServerDetails(server.name);
-
-    store.subscribe((e) => {
-        if(server_details.status != store.state.servers[server_name].status) {
-            console.log(`State change event for Server ${server_name} - ${store.state.servers[server_name].status}`)
-            render(div, store.state.servers[server_name], store);
-            server.status = store.state.servers[server_name].status;
-        }
-    });
+    let server_details = await getServerDetails(server);
 
     render(div, server_details, store);
-
 
     return div;
 }
 
 function render(div, server, store) {
-    console.log('render div');
     const controls = document.createElement("div");
 
     if (server.status === null) {
@@ -34,14 +23,20 @@ function render(div, server, store) {
     } else {
         if (server.status) {
             console.log("Server is online")
-            controls.innerHTML = "Power Off";
-            div.addEventListener('click', function() {
+            controls.innerText = "Power Off";
+            controls.addEventListener('click', function() {
+                console.log("Power off click");
+                controls.innerText = "Loading...";
                 PowerOffServer(server, store);
+                //controls.innerText = "Power On";
             });
         } else if (!server.status) {
-            controls.innerHTML = "Power On";
-            div.addEventListener('click', function() {
+            controls.innerText = "Power On";
+            controls.addEventListener('click', function() {
+                console.log("Power on click");
+                controls.innerText = "Loading...";
                 PowerOnServer(server, store);
+                
             });
         } else if (server_details.status == 2) {
             controls.innerHTML = "Loading...";
@@ -52,7 +47,13 @@ function render(div, server, store) {
 
     div.append(controls);
 
-    div.innerHTML += `<a href="/" data-link>Back</a>`;
+    const backButton = document.createElement("div")
+
+    backButton.innerHTML = `<br /><a href="/" data-link>Back</a>`;
+
+    div.append(backButton);
+
+    
 }
 
 async function getServerDetails(server_name) {
@@ -64,14 +65,34 @@ async function getServerDetails(server_name) {
 }
 
 async function PowerOnServer(server, store){
-    console.log(server);
-    console.log(server["name"]);
     //window.location.href = `/server/${server.name}`
-    console.log(`Power On ${server.name} - ${server.status}`);
+    console.log(`Power On ${server.name} - ${server.status} 2`);
+    const server_state = await apiService.request(`/startServer/${server.name}`)
+        .then((responseJSON) => {
+            return responseJSON;
+    });
+
     store.setState({servers: {[server.name]: {address: server.address, name: server.name, status: true}}});
+    
+
+    await new Promise(r => setTimeout(r, 10000));
+
+    console.log('Sleep finish');
+    navigateTo("/");
 }
 
-function PowerOffServer(server, store){
+async function PowerOffServer(server, store){
     console.log(`Power Off ${server.name} - ${server.status}`);
+
+    const server_state = await apiService.request(`/stopServer/${server.name}`)
+        .then((responseJSON) => {
+            return responseJSON;
+    });
     store.setState({servers: {[server.name]: {address: server.address, name: server.name, status: false}}});
+    
+    await new Promise(r => setTimeout(r, 10000));
+    console.log('Sleep finish');
+    navigateTo("/");
+
+
 }

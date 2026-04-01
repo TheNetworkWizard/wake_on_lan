@@ -1,32 +1,47 @@
 
 import Index from "./views/Index.js";
 import Server from "./views/Server.js";
+import AddServer from "./views/AddServer.js"
 import Error from "./views/Error.js";
 import { store } from "./state/store.js";
 
 const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
 
 const getParams = match => {
+  console.log('getParams');
   const values = match.result.slice(1);
   const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map (result => result[1]);
 
-  return Object.fromEntries(keys.map((key, i) => {
+  const params =  Object.fromEntries(keys.map((key, i) => {
+    console.log(`${key} - ${values[i]}`); 
     return [key, values[i]];
   }));
+
+  console.log(match);
+  if ('error' in match) {
+    params.href = match.result;
+    params.error = match.error;
+  }
+
+  console.log(params);
+  return params;
 };
 
-const navigateTo = url => {
+export const navigateTo = url => {
   history.pushState(null, null, url);
   router();
 }
 
 const router = async () => {
+  console.log("router running");
   store.setState({runTimers: false});
 
   const routes = [
     { path: "/error", view: Error},
     { path: "/", view: Index },
-    { path: "/server/:server_name", view: Server }
+    { path: "/server/:server_name", view: Server },
+    { path: "/addServer", view: AddServer}, 
+    { path: "/error/:error_code", view: Error}
   ];
 
   // Test each route for potential match
@@ -51,17 +66,31 @@ const router = async () => {
 
   const app = document.getElementById("app");
 
-  app.innerHTML = '';
+  const output = await view.render();
 
-  app.append(await view.render());  
+  app.innerHTML = '';
+  if(typeof(output) === 'object') {
+    app.append(output);
+  } else if (typeof(output) === 'string') {
+    app.innerHTML = output;
+  }
+
+  
+
+
+
+    
 }
 
-window.addEventListener("popstate", router);
+window.addEventListener("popstate", e => {
+  router();
+});
 
 console.log("Loading");
 
 document.addEventListener('DOMContentLoaded', function() {
   document.body.addEventListener("click", e => {
+    console.log(`Click Event ${e.target}`);
     if (e.target.matches("[data-link]")) {  
       e.preventDefault();
       navigateTo(e.target.href);
