@@ -10,7 +10,7 @@ export default class extends AbstractView {
 
         if (this.params.error == 404) {
            // window.location.href = "/error/404";
-            return `404 Not Found - ${params.href}`;
+            return `404 Not Found - ${this.params.href}`;
         }
 
         if (this.params.error == 403) {

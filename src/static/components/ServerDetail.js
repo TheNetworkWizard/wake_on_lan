@@ -1,15 +1,12 @@
 import { apiService } from "../services/api.service.js";
 import { store } from "../state/store.js";
-import { navigateTo } from "../main.js";
+import { navigateTo } from "../utils/router.js";
 
 export async function ServerDetail(server, store) {
-    console.log(server);
-    console.log(store);
     console.log(`Getting server details for ${server}`)
     const div = document.createElement("div");
 
     let server_details = await getServerDetails(server);
-
     render(div, server_details, store);
 
     return div;
@@ -43,7 +40,7 @@ function render(div, server, store) {
         }
     }
     
-    div.innerHTML = `${server.name} - ${server.address}<br />`;
+    div.innerHTML = `${server.server_name} - ${server.server_ip}<br />`;
 
     div.append(controls);
 
@@ -66,33 +63,33 @@ async function getServerDetails(server_name) {
 
 async function PowerOnServer(server, store){
     //window.location.href = `/server/${server.name}`
-    console.log(`Power On ${server.name} - ${server.status} 2`);
-    const server_state = await apiService.request(`/startServer/${server.name}`)
+    console.log(`Power On ${server.server_name} - ${server.status} 2`);
+    const server_state = await apiService.request(`/startServer/${server.server_name}`)
         .then((responseJSON) => {
             return responseJSON;
     });
 
-    store.setState({servers: {[server.name]: {address: server.address, name: server.name, status: true}}});
+    store.setState({servers: {[server.server_name]: {address: server.server_ip, name: server.server_name, status: true}}});
     
 
-    await new Promise(r => setTimeout(r, 10000));
+    await new Promise(r => setTimeout(r, 2000));
 
     console.log('Sleep finish');
-    navigateTo("/");
+    window.router.findRoute("/");
 }
 
 async function PowerOffServer(server, store){
-    console.log(`Power Off ${server.name} - ${server.status}`);
+    console.log(`Power Off ${server.server_name} - ${server.status}`);
 
-    const server_state = await apiService.request(`/stopServer/${server.name}`)
+    const server_state = await apiService.request(`/stopServer/${server.server_name}`)
         .then((responseJSON) => {
             return responseJSON;
     });
-    store.setState({servers: {[server.name]: {address: server.address, name: server.name, status: false}}});
+    store.setState({servers: {[server.server_name]: {address: server.server_ip, name: server.server_name, status: false}}});
     
-    await new Promise(r => setTimeout(r, 10000));
+    await new Promise(r => setTimeout(r, 2000));
     console.log('Sleep finish');
-    navigateTo("/");
+    window.router.findRoute("/");
 
 
 }
